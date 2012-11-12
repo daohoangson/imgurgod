@@ -1,4 +1,5 @@
 var mongoskin = require('mongoskin');
+var redis = require('redis');
 var config = require('./config');
 
 var collectionImages = null;
