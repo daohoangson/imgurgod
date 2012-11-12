@@ -160,7 +160,7 @@ exports.imageUrls = {
       if (get_err) {
         console.warn('redis.imageUrls: get error (%s)', get_err.message);
         return callback(config.errors.db_find_error, null);
-      }console.log(get_result);
+      }
       
       if (get_result == null) {
         return callback(0, null);
