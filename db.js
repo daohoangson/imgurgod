@@ -1,11 +1,10 @@
 var mongoskin = require('mongoskin');
-var redis = require('redis');
 var config = require('./config');
 
 var collectionImages = null;
 var collectionVotes = null;
 
-var mongodbServer = mongoskin.db(config.db.mongodb_url, { safe: true }).open(function(err, db) {
+var mongodb = mongoskin.db(config.db.mongodb_url, { safe: true }).open(function(err, db) {
   if (err) {
     console.error('mongodb is NOT connected (%s)', err.message);
     return;
@@ -13,32 +12,16 @@ var mongodbServer = mongoskin.db(config.db.mongodb_url, { safe: true }).open(fun
   
   console.log('mongodb is connected');
   
-  collectionImages = mongodbServer.bind('images');
+  collectionImages = mongodb.bind('images');
   exports.images.count(function(count_err, count_result) {
     console.log('mongodb.images: count = %d', count_result);
   });
 
-  collectionVotes = mongodbServer.bind('votes');
+  collectionVotes = mongodb.bind('votes');
   exports.votes.count(function(count_err, count_result) {
     console.log('mongodb.votes: count = %d', count_result);
   });
 });
-
-var redisUrl = require('url').parse(config.db.redis_url);
-var redisClient = null;
-var redisClientTmp = redis.createClient(redisUrl.port, redisUrl.hostname);
-if (redisUrl.auth) {
-  // there is authentication info in redis_url, we will authenticate our client now
-  redisClientTmp.auth(redisUrl.auth.split(':')[1]);
-}
-redisClientTmp.on('ready', function() {
-  console.log('redis is connected');
-  redisClient = redisClientTmp;
-});
-redisClientTmp.on('error', function(err) {
-  console.log('redis is not connected (error: %s)', err.message);
-  redisClient = null;
-})
 
 exports.images = {
   insert: function(url, callback) {
@@ -114,7 +97,7 @@ exports.votes = {
     }
     
     var newVote = {
-      imageId: new mongodbServer.ObjectID(imageId),
+      imageId: new mongodb.ObjectID(imageId),
       word: word,
       point: point,
       timestamp: Math.floor(new Date().getTime() / 1000)
@@ -145,37 +128,5 @@ exports.votes = {
       
       return callback(0, count_result);
     });
-  }
-};
-
-exports.imageUrls = {
-  exists: function(url, callback) {
-    // callback = function(err, exists) {};
-    if (redisClient == null) {
-      console.warn('redis client handle is null');
-      return callback(config.errors.db_redis_is_null, null);
-    }
-    
-    redisClient.get(url, function(get_err, get_result) {
-      if (get_err) {
-        console.warn('redis.imageUrls: get error (%s)', get_err.message);
-        return callback(config.errors.db_find_error, null);
-      }console.log(get_result);
-      
-      if (get_result == null) {
-        return callback(0, null);
-      } else {
-        return callback(0, get_result === '1');
-      }
-    });
-  },
-  
-  update: function(url, exists) {
-    if (redisClient == null) {
-      console.warn('redis client handle is null');
-      return callback(config.errors.db_redis_is_null, null);
-    }
-    
-    redisClient.setex(url, 86400, exists ? '1' : '0'); // set the key and make it auto expire in a day
   }
 };
