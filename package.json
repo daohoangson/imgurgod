@@ -9,7 +9,9 @@
     "express": "3.0.1",
     "jade": "*",
     "express-expose": "~0.3.3",
-    "mongoskin": "~0.4.4"
+    "mongoskin": "~0.4.4",
+    "redis": "~0.8.2",
+    "hiredis": "~0.1.14"
   },
   "engines": {
     "node": "0.8.x",
