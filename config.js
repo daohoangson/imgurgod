@@ -25,8 +25,8 @@ exports.http = {
 }
 
 exports.phrases = {
-  title: 'Is It Really?',
-  question: 'Is this image really about %s?',
+  title: 'Is it?',
+  question: 'Does this image have anything to do with "%s"?',
   yes: 'Yes',
   no: 'No',
   
