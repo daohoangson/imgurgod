@@ -23,6 +23,22 @@ var mongodb = mongoskin.db(config.db.mongodb_url, { safe: true }).open(function(
   });
 });
 
+var redisUrl = require('url').parse(config.db.redis_url);
+var redisClient = null;
+var redisClientTmp = redis.createClient(redisUrl.port, redisUrl.hostname);
+if (redisUrl.auth) {
+  // there is authentication info in redis_url, we will authenticate our client now
+  redisClientTmp.auth(redisUrl.auth.split(':')[1]);
+}
+redisClientTmp.on('ready', function() {
+  console.log('redis is connected');
+  redisClient = redisClientTmp;
+});
+redisClientTmp.on('error', function(err) {
+  console.log('redis is not connected (error: %s)', err.message);
+  redisClient = null;
+})
+
 exports.images = {
   insert: function(url, callback) {
     // callback = function(err, image) {};
@@ -128,5 +144,37 @@ exports.votes = {
       
       return callback(0, count_result);
     });
+  }
+};
+
+exports.imageUrls = {
+  exists: function(url, callback) {
+    // callback = function(err, exists) {};
+    if (redisClient == null) {
+      console.warn('redis client handle is null');
+      return callback(config.errors.db_redis_is_null, null);
+    }
+    
+    redisClient.get(url, function(get_err, get_result) {
+      if (get_err) {
+        console.warn('redis.imageUrls: get error (%s)', get_err.message);
+        return callback(config.errors.db_find_error, null);
+      }console.log(get_result);
+      
+      if (get_result == null) {
+        return callback(0, null);
+      } else {
+        return callback(0, get_result === '1');
+      }
+    });
+  },
+  
+  update: function(url, exists) {
+    if (redisClient == null) {
+      console.warn('redis client handle is null');
+      return callback(config.errors.db_redis_is_null, null);
+    }
+    
+    redisClient.setex(url, 86400, exists ? '1' : '0'); // set the key and make it auto expire in a day
   }
 };

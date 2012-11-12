@@ -1,6 +1,7 @@
 exports.errors = {
   db_images_is_null: 10001,
   db_votes_is_null: 10002,
+  db_redis_is_null: 10003,
   
   db_count_error: 20001,
   db_find_error: 20002,
@@ -10,7 +11,8 @@ exports.errors = {
 };
 
 exports.db = {
-  mongodb_url: process.env.MONGOHQ_URL || 'localhost:27017/isitreally'
+  mongodb_url: process.env.MONGOHQ_URL || '127.0.0.1:27017/imgurgod',
+  redis_url: process.env.REDISTOGO_URL || 'redis://127.0.0.1:6379'
 }
 
 exports.http = {
