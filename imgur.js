@@ -17,6 +17,7 @@ exports.pickOne = function(callback) {
       }
     }
     
+    var url = null;
     var url = util.format('http://i.imgur.com/%s.jpg', code); // no extension found
     var dbUrl = util.format('imgur/%s', code); // save database space...
     
