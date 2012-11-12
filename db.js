@@ -5,7 +5,7 @@ var config = require('./config');
 var collectionImages = null;
 var collectionVotes = null;
 
-var mongodb = mongoskin.db(config.db.mongodb_url, { safe: true }).open(function(err, db) {
+var mongodbServer = mongoskin.db(config.db.mongodb_url, { safe: true }).open(function(err, db) {
   if (err) {
     console.error('mongodb is NOT connected (%s)', err.message);
     return;
@@ -13,12 +13,12 @@ var mongodb = mongoskin.db(config.db.mongodb_url, { safe: true }).open(function(
   
   console.log('mongodb is connected');
   
-  collectionImages = mongodb.bind('images');
+  collectionImages = mongodbServer.bind('images');
   exports.images.count(function(count_err, count_result) {
     console.log('mongodb.images: count = %d', count_result);
   });
 
-  collectionVotes = mongodb.bind('votes');
+  collectionVotes = mongodbServer.bind('votes');
   exports.votes.count(function(count_err, count_result) {
     console.log('mongodb.votes: count = %d', count_result);
   });
@@ -114,7 +114,7 @@ exports.votes = {
     }
     
     var newVote = {
-      imageId: new mongodb.ObjectID(imageId),
+      imageId: new mongodbServer.ObjectID(imageId),
       word: word,
       point: point,
       timestamp: Math.floor(new Date().getTime() / 1000)
