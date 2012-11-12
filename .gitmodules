@@ -1,0 +1,3 @@
+[submodule "lists/Common-English-Nouns"]
+	path = lists/Common-English-Nouns
+	url = https://github.com/psobko/Common-English-Nouns

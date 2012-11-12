@@ -1,5 +1,20 @@
 extends layout
 
 block content
-  h1= title
-  p Welcome to #{title}
+  div.row-fluid
+    div.span6
+      img(src=imageUrl, class='image')
+    div.span6
+      div.row-fluid
+        div.span12
+          h1 #{question}
+      
+      form.row-fluid.answers(action=settings.config.http.route.submit, method='POST')
+        div.span6
+          input.btn.btn-primary.answer.yes(type='submit', name='yes', value=settings.config.phrases.yes)
+        div.span6
+          input.btn.btn-danger.answer.no(type='submit', name='no', value=settings.config.phrases.no)
+        
+        input(type='hidden', name='imageId', value=imageId)
+        input(type='hidden', name='word', value=word)
+        input(type='hidden', name='antispam', value=antispam)

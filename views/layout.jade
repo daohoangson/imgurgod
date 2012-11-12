@@ -1,7 +1,20 @@
 doctype 5
-html
+html(lang='en')
   head
     title= title
     link(rel='stylesheet', href='/stylesheets/style.css')
+    
+    <!-- express-expose -->
+    script!= javascript
+    
+    <!-- jQuery -->
+    script(src='//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js')
+    
+    <!-- Twitter Bootstrap -->
+    meta(name='viewport', content='width=device-width, initial-scale=1.0')
+    link(rel='stylesheet', href='/stylesheets/tb/bootstrap.min.css', media='screen')
+    link(rel='stylesheet', href='/stylesheets/tb/bootstrap-responsive.min.css')
+    script(src='/javascripts/tb/bootstrap.min.js')
   body
-    block content
+    div.container-fluid
+      block content

@@ -4,15 +4,18 @@
  */
 
 var express = require('express')
-  , routes = require('./routes')
-  , user = require('./routes/user')
+  , expressExpose = require('express-expose')
   , http = require('http')
   , path = require('path');
 
 var app = express();
+var db = require('./db');
+var config = require('./config');
 
 app.configure(function(){
-  app.set('port', process.env.PORT || 3000);
+  app.expose({ config: config });
+  app.set('config', config);
+  
   app.set('views', __dirname + '/views');
   app.set('view engine', 'jade');
   app.use(express.favicon());
@@ -27,9 +30,10 @@ app.configure('development', function(){
   app.use(express.errorHandler());
 });
 
-app.get('/', routes.index);
-app.get('/users', user.list);
+app.get(config.http.route.vote, require('./routes').index);
+app.post(config.http.route.submit, require('./routes').submit);
+app.get(config.http.route.top, require('./routes/list').top);
 
-http.createServer(app).listen(app.get('port'), function(){
-  console.log("Express server listening on port " + app.get('port'));
+http.createServer(app).listen(config.http.port, function(){
+  console.log("Express server listening on port " + config.http.port);
 });

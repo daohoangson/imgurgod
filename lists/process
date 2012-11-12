@@ -1,0 +1,44 @@
+#!/usr/bin/php
+<?php
+
+$words = array();
+
+$cen = file(dirname(__FILE__) . '/Common-English-Nouns/README.md');
+foreach ($cen as $line) {
+  $word = trim($line);
+  $wordLength = strlen($word);
+  
+  if ($wordLength == 5) {
+    if (!in_array($word, $words)) {
+      $words[] = $word;
+    }
+  }
+}
+
+asort($words);
+
+$outputPath = dirname(__FILE__) . '/processed.js';
+$output = fopen($outputPath, 'w');
+
+fwrite($output, "exports.words = [");
+
+$i = 0;
+foreach ($words as $word) {
+  if ($i > 0) {
+    fwrite($output, ",");
+  }
+  
+  if ($i % 5 == 0) {
+    fwrite($output, "\n  ");
+  }
+  
+  fwrite($output, "'$word'");
+  
+  $i++;
+}
+
+fwrite($output, "\n];");
+fclose($output);
+
+echo 'Collected ', count($words), ' words';
+echo "\n";

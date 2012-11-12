@@ -6,3 +6,17 @@ body {
 a {
   color: #00B7FF;
 }
+
+.image {
+  width: 100%;
+}
+
+.question {
+  
+}
+  .answers {
+    margin: 0;
+  }
+    input.answer[type="submit"] {
+      width: 100%;
+    }
